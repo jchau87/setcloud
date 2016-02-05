@@ -9,4 +9,13 @@ class SoundcloudController < ApplicationController
 
     redirect_to "/app"
   end
+
+  def playlists
+    render json: @client.get("/me/playlists")
+  end
+
+  def likes
+    render json: @client.get("/me/favorites")
+  end
+
 end

@@ -14,7 +14,7 @@ class HomeController < ApplicationController
   end
 
   def app
-    
+    puts session[:token]["access_token"]
   end
 
   protected
