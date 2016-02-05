@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
     options ||= {
       client_id: SC_CLIENT_ID,
       client_secret: SC_SECRET,
-      redirect_uri: 'http://#{host_with_port}/soundcloud/callback'
+      redirect_uri: "http://#{request.host_with_port}/soundcloud/callback"
     }
 
     @client = Soundcloud.new options

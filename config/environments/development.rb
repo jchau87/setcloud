@@ -39,3 +39,6 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end
+
+SC_CLIENT_ID = "2aa0d0cfc698af27edef798dcf5d41eb"
+SC_SECRET = "ff01575a497f3244307c0c57d83f7a52"
