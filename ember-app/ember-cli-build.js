@@ -5,6 +5,23 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
     // Add options here
+    storeConfigInMeta: false,
+
+    fingerprint: {
+      enabled: false
+    },    
+
+    outputPaths: {
+      app: {
+        html: 'index.html',
+        // css: '../../../app/assets/stylesheets/setcloud.css',
+        js: '../../../app/assets/javascripts/setcloud.js'
+      },
+      vendor: {
+        css: '../../../app/assets/stylesheets/vendor.css',
+        js: '../../../app/assets/javascripts/vendor.js'
+      }
+    }
   });
 
   // Use `app.import` to add additional libraries to the generated
