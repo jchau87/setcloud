@@ -7,7 +7,6 @@ class ApplicationController < ActionController::Base
 
   def initialize_client
     access_token = params[:access_token] || session[:token].try(:[], "access_token")
-    puts "ACCESS TOKEN #{access_token}"
     options = { access_token: access_token } if access_token
 
     options ||= {

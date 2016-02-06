@@ -1,5 +1,6 @@
 class SoundcloudController < ApplicationController
   before_filter :initialize_client
+  respond_to :html, :json
 
   def callback
     code = params[:code]
@@ -11,11 +12,13 @@ class SoundcloudController < ApplicationController
   end
 
   def playlists
-    render json: @client.get("/me/playlists")
+    @playlists = @client.get("/me/playlists")
+    respond_with @playlists
   end
 
   def likes
-    render json: @client.get("/me/favorites")
+    @likes = @client.get("/me/favorites")
+    respond_with @likes
   end
 
 end

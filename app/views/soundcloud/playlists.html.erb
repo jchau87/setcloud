@@ -1,0 +1,11 @@
+<h1>Playlists</h1>
+
+<script type="text/x-handlebars">
+  {{ component Setcloud.playlistsListComponent }}
+</script>
+
+<script type="text/javascript">
+  $(function() {
+    Setcloud.playlistsController.loadAll(<%= @playlists.to_json.html_safe %>);
+  });
+</script>
