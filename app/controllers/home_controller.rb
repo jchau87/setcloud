@@ -1,10 +1,11 @@
 class HomeController < ApplicationController
-  before_filter :initialize_client
+  before_filter :initialize_client, except: :test
+  before_filter :require_active_soundcloud_session, only: :app
 
   def index
     begin 
       if active_soundcloud_session?
-        redirect_to "/app" and return
+        redirect_to "/app/" and return
       end
     rescue Exception => ex
       # TODO: log error
@@ -17,10 +18,8 @@ class HomeController < ApplicationController
     puts session[:token]["access_token"]
   end
 
-  protected
-
-  def active_soundcloud_session?
-    session[:token] && Soundcloud.new(:access_token => session[:token]["access_token"]).get("/me")
+  def test
+    
   end
 
 end

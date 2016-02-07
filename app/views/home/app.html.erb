@@ -1,1 +1,5 @@
-<h1> Hi this is the app </h1>
+<% content_for :head do %>
+  <%= javascript_include_tag 'application' %>
+<% end %>
+
+<div id="ember-app"></div>

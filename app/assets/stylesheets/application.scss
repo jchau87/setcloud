@@ -10,7 +10,9 @@
  * defined in the other CSS/SCSS files in this directory. It is generally better to create a new
  * file per style scope.
  *
- *= requier vendor
- *= require_tree .
+ 
+ *= require _bootflat
+ *= require vendor
+ *= require home
  *= require_self
  */

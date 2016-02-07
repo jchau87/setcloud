@@ -5,11 +5,14 @@ Rails.application.routes.draw do
   get 'app' => 'home#app'
   get 'soundcloud/callback'
 
-  get 'soundcloud/likes'
   get 'likes' => 'soundcloud#likes'
 
-  get 'soundcloud/playlists'
   get 'playlists' => 'soundcloud#playlists'
+  get 'playlists/likes' => 'soundcloud#likes'
+  get 'playlists/:id' => 'soundcloud#playlist'
+
+  get 'test' => 'home#test'
+  get '*path' => 'home#app'  
 
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".  

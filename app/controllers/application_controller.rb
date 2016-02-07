@@ -17,4 +17,18 @@ class ApplicationController < ActionController::Base
 
     @client = Soundcloud.new options
   end
+
+  def active_soundcloud_session?
+    return false unless session[:token]
+
+    client = @client || Soundcloud.new(:access_token => session[:token].try(:[],"access_token"))
+    client.get("/me") rescue false
+  end
+
+  def require_active_soundcloud_session
+    unless active_soundcloud_session?
+      session[:token] = nil
+      redirect_to "/" and return
+    end
+  end
 end
