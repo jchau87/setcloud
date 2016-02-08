@@ -1,5 +1,3 @@
-<div class="playlist-item">
-  {{#link-to "playlists.playlist" playlist}}
-    {{playlist.title}}
-  {{/link-to}}
-</div>
+{{#link-to "playlists.playlist" playlist}}
+  <span class="glyphicon glyphicon-music"></span>&nbsp;&nbsp;{{playlist.title}}
+{{/link-to}}

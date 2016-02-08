@@ -1,9 +1,11 @@
-<div class="container-fluid">
+<div class="container-fluid"> --}}
   <div class="row">
     <div class="sidebar">
-    {{#each model as |playlist|}}
-      {{playlist-item playlist=playlist}}
-    {{/each}}
+      <ul>
+        {{#each model as |playlist|}}
+          {{playlist-item playlist=playlist}}
+        {{/each}}
+      </ul>
     </div>
     <div class="main">
       {{outlet}}

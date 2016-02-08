@@ -22,7 +22,13 @@ class SoundcloudController < ApplicationController
       tracks: @client.get("/me/favorites").as_json
     }
 
-    @playlists.push(Hashie::Mash.new likes)
+    @playlists.insert(0, Hashie::Mash.new(likes))
+
+    @playlists.each do |playlist|
+      playlist.tracks.each do |track|
+        track.artwork_url = track.artwork_url.gsub(/large/, "t500x500")
+      end
+    end
 
     @playlists_json_api = {
       data: @playlists.map do |pl|
@@ -41,6 +47,10 @@ class SoundcloudController < ApplicationController
     id = params[:id]
     @playlist = @client.get("/playlists/#{id}")
 
+    @playlist.tracks.each do |track|
+      track.artwork_url = track.artwork_url.gsub(/large/, "t500x500")
+    end
+
     @playlist_json_api = {
       data: {
         type: "playlists",
@@ -54,6 +64,10 @@ class SoundcloudController < ApplicationController
 
   def likes
     @likes = @client.get("/me/favorites")
+
+    @likes.each do |like|
+      like.artwork_url = like.artwork_url.gsub(/large/, "t500x500")
+    end
 
     @likes_json_api = {
       data: {
