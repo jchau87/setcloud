@@ -1,4 +1,5 @@
 class HomeController < ApplicationController
+  before_filter :log_action
   before_filter :initialize_client, except: :test
   before_filter :require_active_soundcloud_session, only: :app
 
