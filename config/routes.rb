@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   get 'playlists' => 'soundcloud#playlists'
   get 'playlists/likes' => 'soundcloud#likes'
   get 'playlists/:id' => 'soundcloud#playlist'
+  patch 'playlists/:id' => 'soundcloud#update_playlist'
 
   get 'test' => 'home#test'
   get '*path' => 'home#app'  

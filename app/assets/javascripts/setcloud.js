@@ -3,11 +3,15 @@
 
 /* jshint ignore:end */
 
-define("ember-app/adapters/application", ["exports"], function (exports) {
-  exports["default"] = DS.JSONAPIAdapter.extend({
+define("ember-app/adapters/application", ["exports", "ember-data"], function (exports, _emberData) {
+  exports["default"] = _emberData["default"].JSONAPIAdapter.extend({
     buildURL: function buildURL(record, suffix) {
       var s = this._super(record, suffix);
       return s + ".json";
+    },
+
+    headers: {
+      "content-type": "application/json"
     }
   });
 });
@@ -41,7 +45,32 @@ define('ember-app/components/app-version', ['exports', 'ember-cli-app-version/co
 define('ember-app/components/playlist-item', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Component.extend({
     tagName: 'li',
-    classNames: ['playlist-item']
+    classNames: ['playlist-item', 'draggable-dropzone'],
+    classNameBindings: ['draggableClass', 'selected'],
+    draggableClass: 'inactive',
+
+    dragEnter: function dragEnter(e) {
+      this.set('draggableClass', 'active');
+      return false;
+    },
+
+    dragLeave: function dragLeave(e) {
+      this.set('draggableClass', 'inactive');
+      return false;
+    },
+
+    dragOver: function dragOver(e) {
+      return false;
+    },
+
+    drop: function drop(e) {
+      var data = JSON.parse(e.dataTransfer.getData('text/data'));
+      data['playlistId'] = this.get('playlist').id;
+      this.sendAction("dropped", data);
+
+      this.set('draggableClass', 'inactive');
+      return false;
+    }
 
   });
 });
@@ -52,21 +81,18 @@ define('ember-app/components/track-item', ['exports', 'ember'], function (export
     attributeBindings: ['draggable'],
     draggable: true,
 
-    didInsertElement: function didInsertElement() {
-      console.log(this.elementId);
-      console.log(this.element);
-    },
+    // didInsertElement: function() {   
+    // },
 
     dragStart: function dragStart(e) {
-      var img = this.$(".track-image")[0];
-      console.log(e);
-      e.data = {
-        id: 234
-      };
+      // Set track id
+      var track = this.get('track');
+      e.dataTransfer.setData('text/data', JSON.stringify({ id: track.id }));
 
+      // Set draggable image
+      var img = this.$(".track-image")[0];
       e.dataTransfer.setDragImage(img, 0, 0);
     }
-
   });
 });
 define('ember-app/controllers/array', ['exports', 'ember'], function (exports, _ember) {
@@ -259,6 +285,24 @@ define('ember-app/routes/playlists', ['exports', 'ember'], function (exports, _e
     model: function model() {
       var playlists = this.store.findAll('playlist');
       return playlists;
+    },
+
+    actions: {
+      updatePlaylist: function updatePlaylist(data) {
+        console.log("UPDATING PLAYLIST");
+        console.log(data);
+
+        this.store.findRecord('playlist', data.playlistId).then(function (playlist) {
+
+          var tracks = playlist.get('tracks');
+          tracks.push({ kind: 'track', id: data.id });
+          playlist.set('tracks', tracks);
+
+          return playlist.save();
+        }).then(function (playlist) {
+          playlist.reload();
+        });
+      }
     }
   });
 });
@@ -469,7 +513,7 @@ define("ember-app/templates/playlists/playlist", ["exports"], function (exports)
               "column": 2
             },
             "end": {
-              "line": 5,
+              "line": 4,
               "column": 2
             }
           },
@@ -494,7 +538,7 @@ define("ember-app/templates/playlists/playlist", ["exports"], function (exports)
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "track-item", [], ["track", ["subexpr", "@mut", [["get", "track", ["loc", [null, [4, 23], [4, 28]]]]], [], []]], ["loc", [null, [4, 4], [4, 30]]]]],
+        statements: [["inline", "track-item", [], ["track", ["subexpr", "@mut", [["get", "track", ["loc", [null, [3, 23], [3, 28]]]]], [], []]], ["loc", [null, [3, 4], [3, 30]]]]],
         locals: ["track"],
         templates: []
       };
@@ -510,7 +554,7 @@ define("ember-app/templates/playlists/playlist", ["exports"], function (exports)
             "column": 0
           },
           "end": {
-            "line": 6,
+            "line": 5,
             "column": 5
           }
         },
@@ -535,7 +579,7 @@ define("ember-app/templates/playlists/playlist", ["exports"], function (exports)
         morphs[0] = dom.createMorphAt(dom.childAt(fragment, [0]), 1, 1);
         return morphs;
       },
-      statements: [["block", "each", [["get", "model.tracks", ["loc", [null, [2, 10], [2, 22]]]]], [], 0, null, ["loc", [null, [2, 2], [5, 11]]]]],
+      statements: [["block", "each", [["get", "model.tracks", ["loc", [null, [2, 10], [2, 22]]]]], [], 0, null, ["loc", [null, [2, 2], [4, 11]]]]],
       locals: [],
       templates: [child0]
     };
@@ -555,7 +599,7 @@ define("ember-app/templates/playlists", ["exports"], function (exports) {
               "column": 8
             },
             "end": {
-              "line": 7,
+              "line": 9,
               "column": 8
             }
           },
@@ -580,7 +624,7 @@ define("ember-app/templates/playlists", ["exports"], function (exports) {
           morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           return morphs;
         },
-        statements: [["inline", "playlist-item", [], ["playlist", ["subexpr", "@mut", [["get", "playlist", ["loc", [null, [6, 35], [6, 43]]]]], [], []]], ["loc", [null, [6, 10], [6, 45]]]]],
+        statements: [["inline", "playlist-item", [], ["playlist", ["subexpr", "@mut", [["get", "playlist", ["loc", [null, [7, 23], [7, 31]]]]], [], []], "dropped", "updatePlaylist"], ["loc", [null, [6, 10], [8, 40]]]]],
         locals: ["playlist"],
         templates: []
       };
@@ -598,7 +642,7 @@ define("ember-app/templates/playlists", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 14,
+            "line": 16,
             "column": 6
           }
         },
@@ -659,7 +703,7 @@ define("ember-app/templates/playlists", ["exports"], function (exports) {
         morphs[1] = dom.createMorphAt(dom.childAt(element0, [3]), 1, 1);
         return morphs;
       },
-      statements: [["block", "each", [["get", "model", ["loc", [null, [5, 16], [5, 21]]]]], [], 0, null, ["loc", [null, [5, 8], [7, 17]]]], ["content", "outlet", ["loc", [null, [11, 6], [11, 16]]]]],
+      statements: [["block", "each", [["get", "model", ["loc", [null, [5, 16], [5, 21]]]]], [], 0, null, ["loc", [null, [5, 8], [9, 17]]]], ["content", "outlet", ["loc", [null, [13, 6], [13, 16]]]]],
       locals: [],
       templates: [child0]
     };
@@ -672,11 +716,12 @@ define("ember-app/templates/playlists", ["exports"], function (exports) {
 /* jshint ignore:start */
 
 define('ember-app/config/environment', ['ember'], function(Ember) {
-  return { 'default': {"modulePrefix":"ember-app","environment":"production","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"name":"ember-app","version":"0.0.0+b7cfdcff"},"contentSecurityPolicyHeader":"Content-Security-Policy-Report-Only","contentSecurityPolicy":{"default-src":"'none'","script-src":"'self'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":false}};
+  return { 'default': {"modulePrefix":"ember-app","environment":"development","baseURL":"/","locationType":"auto","EmberENV":{"FEATURES":{}},"APP":{"name":"ember-app","version":"0.0.0+a56e7544"},"contentSecurityPolicyHeader":"Content-Security-Policy-Report-Only","contentSecurityPolicy":{"default-src":"'none'","script-src":"'self' 'unsafe-eval'","font-src":"'self'","connect-src":"'self'","img-src":"'self'","style-src":"'self'","media-src":"'self'"},"exportApplicationGlobal":true}};
 });
 
 if (!runningTests) {
-  require("ember-app/app")["default"].create({"name":"ember-app","version":"0.0.0+b7cfdcff"});
+  require("ember-app/app")["default"].create({"name":"ember-app","version":"0.0.0+a56e7544"});
 }
 
 /* jshint ignore:end */
+//# sourceMappingURL=setcloud.map

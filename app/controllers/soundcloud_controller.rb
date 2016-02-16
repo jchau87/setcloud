@@ -33,7 +33,7 @@ class SoundcloudController < ApplicationController
     @playlists_json_api = {
       data: @playlists.map do |pl|
         {
-          type: "playlists",
+          type: "playlist",
           id: pl.id,
           attributes: pl.as_json
         }
@@ -53,13 +53,38 @@ class SoundcloudController < ApplicationController
 
     @playlist_json_api = {
       data: {
-        type: "playlists",
+        type: "playlist",
         id: @playlist.id,
         attributes: @playlist.as_json
       }
     }
 
     respond_with @playlist_json_api
+  end
+
+  def update_playlist
+    id = params[:id]    
+    
+    tracks = params[:data][:attributes][:tracks]
+    if tracks.select{|t| t[:id] == tracks.last[:id]}.length < 2
+      @playlist = @client.put("/playlists/#{id}", { playlist: { tracks: tracks } })
+    else
+      @playlist = @client.get("/playlists/#{id}")
+    end
+
+    @playlist.tracks.each do |track|
+      track.artwork_url = track.artwork_url.gsub(/large/, "t500x500")
+    end
+
+    @playlist_json_api = {
+      data: {
+        type: "playlist",
+        id: @playlist.id,
+        attributes: @playlist.as_json
+      }
+    }
+
+    render json: @playlist_json_api
   end
 
   def likes
@@ -71,7 +96,7 @@ class SoundcloudController < ApplicationController
 
     @likes_json_api = {
       data: {
-        type: "playlists",
+        type: "playlist",
         id: "likes",
         attributes: @likes.as_json
       }

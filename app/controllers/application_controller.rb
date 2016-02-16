@@ -1,7 +1,7 @@
 class ApplicationController < ActionController::Base
   # Prevent CSRF attacks by raising an exception.
   # For APIs, you may want to use :null_session instead.
-  protect_from_forgery with: :exception
+  # protect_from_forgery with: :exception
 
   def log_action
     Rails::logger.info "PROCESSING ACTION #{params[:controller]}##{params[:action]}"
@@ -13,15 +13,11 @@ class ApplicationController < ActionController::Base
     access_token = params[:access_token] || session[:token].try(:[], "access_token")
     options = { access_token: access_token } if access_token
 
-    Rails::logger.info "INITIALIZING CLIENT"
-
     options ||= {
       client_id: SC_CLIENT_ID,
       client_secret: SC_SECRET,
       redirect_uri: "http://#{request.host_with_port}/soundcloud/callback"
     }
-
-    Rails::logger.info "INITIALIZED CLIENT"
 
     @client = Soundcloud.new options
   end

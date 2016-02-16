@@ -35,6 +35,7 @@ li {
 }
 
 li.playlist-item {
+
   &:hover {
     background-color: $lightgray-dark;
   }
@@ -43,6 +44,19 @@ li.playlist-item {
     color: $darkgray-dark;
     display: block;
     padding: 5px 0 5px 10px;
+    transition: color .1s;
+  }
+
+  &.draggable-dropzone {
+    transition: padding-left .1s;
+
+    &.active {
+      padding-left: 12px; 
+
+      a {
+        color: #758FB3;
+      }     
+    }
   }  
 }
 

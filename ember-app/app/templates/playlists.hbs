@@ -3,7 +3,9 @@
     <div class="sidebar">
       <ul>
         {{#each model as |playlist|}}
-          {{playlist-item playlist=playlist}}
+          {{playlist-item 
+              playlist=playlist 
+              dropped="updatePlaylist"}}
         {{/each}}
       </ul>
     </div>
